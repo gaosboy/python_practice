@@ -6,17 +6,8 @@
 import requests
 import json
 
-# 接口URL
-url = 'https://fanyi.baidu.com/sug'
-
-if __name__ == '__main__':
-    print('输入要翻译的词语（q或Q退出）：', end='')
-    orig = input()
-
-    # q或Q 表示退出
-    if orig in ['q', 'Q']:
-        exit()
-
+# 请求百度的接口，查词
+def request_dict(keyword, url = 'https://fanyi.baidu.com/sug'):
     response = requests.post(url, {'kw':orig})
     # 标记位
     hasResult = False
@@ -34,6 +25,17 @@ if __name__ == '__main__':
                     hasResult = True
         except ValueError:
             pass
+    return hasResult, result
+
+if __name__ == '__main__':
+    print('输入要翻译的词语（q或Q退出）：', end='')
+    orig = input()
+
+    # q或Q 表示退出
+    if orig in ['q', 'Q']:
+        exit()
+
+    hasResult, result = request_dict(orig)
 
     if hasResult:
         print(result)
