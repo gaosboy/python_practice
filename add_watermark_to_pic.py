@@ -11,6 +11,7 @@ from PIL import Image, ImageDraw, ImageFont
 # 获取字符串长度，汉字算2个长度，英文或数字算1个
 def str_len(txt):
     length = 0
+    # 非ascii的半角字符utf-8长度是2，例如α β γ这种
     for ch in txt:
         length += 2 if len(ch.encode('utf-8')) > 2 else 1
 
@@ -63,15 +64,12 @@ def get_args():
 
 # 转换绝对位置。根据底图大小，水印大小，九宫格位置计算出水印绝对位置
 # bg_size 和 wm_size 是数组，表示w和h，pos_id从1-9
-def watermark_position(bg_size, wm_rect, pos_id):
+def pos_in_bg(bg_size, wm_size, pos_id):
     # 留边 10px
     margin = 10
     # x y默认值 -1，表示异常
     x = -1
     y = -1
-
-    # 取出size
-    wm_size = (wm_rect[2], wm_rect[3])
 
     # 水印要在margin范围内
     if bg_size[0] > margin * 2 + wm_size[0] or bg_size[1] > margin * 2 + wm_size[1]:
@@ -95,20 +93,21 @@ def watermark_position(bg_size, wm_rect, pos_id):
     return (x, y)
 
 # 构造水印
-def watermark(bg_size, wm_text, wm_size, wm_alpha, pos_id):
+def watermark(bg_size, wm_text, wm_fnt_size, wm_alpha, pos_id):
     result = None
-
     try:
-        # 透明画布
-        wm = Image.new('RGBA', bg_size, (255, 255, 255, 0))
         # 字体 Verdana.ttf 字体在当前目录
-        fnt = ImageFont.truetype('for_watermark.otf', wm_size)
-        # 准备绘制文字
-        draw = ImageDraw.Draw(wm)
+        fnt = ImageFont.truetype('for_watermark.ttf', wm_fnt_size)
         # 水印位置
-        wm_pos = watermark_position(bg_size, draw.textbbox((0,0), wm_text, font=fnt), pos_id)
+        wm_rect = fnt.getbbox(wm_text)
+        wm_pos = pos_in_bg(bg_size, (wm_rect[2], wm_rect[3]), pos_id)
+
         # 如果水印位置出错（水印大于背景），就返回空
         if 0 < wm_pos[0] and 0 < wm_pos[1]:
+            # 透明画布
+            wm = Image.new('RGBA', bg_size, (255, 255, 255, 0))
+            # 准备绘制文字
+            draw = ImageDraw.Draw(wm)
             draw.text(wm_pos, wm_text, font=fnt, fill=(255, 255, 255, int(256 * wm_alpha)))
             result = wm
     except ValueError:
