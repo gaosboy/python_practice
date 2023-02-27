@@ -30,7 +30,7 @@ def sub_str(txt, max_len):
     return result
 
 # 判断文件是否为图片（可以加水印操作）
-def isImage(file_name):
+def is_image(file_name):
     if os.path.isfile(file_name):
         name, ext = os.path.splitext(file_name)
         # 根据后缀名判断
@@ -130,13 +130,13 @@ if __name__ == '__main__':
     # 把制定文件和文件夹全部load进来，使用set避免重复
     files = set()
 
-    if isImage(input_file):
+    if is_image(input_file):
         files.add(os.path.abspath(input_file))
 
     if os.path.isdir(input_dir):
         for file in os.listdir(input_dir):
             file = input_dir + '/' + file
-            if isImage(file):
+            if is_image(file):
                 files.add(os.path.abspath(file))
 
     # 确认输入文件没问题，开干！
