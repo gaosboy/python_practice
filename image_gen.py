@@ -64,8 +64,10 @@ def create_image(prompt):
                 prompt=prompt,
                 n=1,
                 size='512x512')
-    except ValueError:
-        pass
+    except openai.error.OpenAIError as e:
+        print(e.http_status)
+        print(e.error)
+
 
     return response
 
@@ -79,8 +81,9 @@ def edit_image(input_img, mask_img, prompt):
                 prompt=prompt,
                 n=1,
                 size='512x512')
-    except ValueError:
-        pass
+    except openai.error.OpenAIError as e:
+        print(e.http_status)
+        print(e.error)
 
     return response
 
@@ -92,8 +95,9 @@ def variation_image(input_img):
                 image=open(input_img, 'rb'),
                 n=1,
                 size='512x512')
-    except ValueError:
-        pass
+    except openai.error.OpenAIError as e:
+        print(e.http_status)
+        print(e.error)
 
     return response
 
