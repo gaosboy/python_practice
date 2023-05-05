@@ -79,11 +79,13 @@ while True :
             (x, y) = snake[ii]
             snake[ii] = (x + vx, y + vy)
 
-            if x < 0 or x > length or y < 0 or y > length : # 撞墙了
-                gameOver = True
-            elif snake[ii] == apple : # 吃果了
-                hungry = True
-                growup(snake)
+    if x < 0 or x > length or y < 0 or y > length : # 撞墙了
+        gameOver = True
+    elif snake[ii] in snake[1:] : # 撞自己
+        gameOver = True
+    elif snake[ii] == apple : # 吃果了
+        hungry = True
+        growup(snake)
 
     # 渲染
     frame = numpy.zeros((length, length), dtype = numpy.uint8) # 刷新场地
