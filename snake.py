@@ -52,25 +52,24 @@ cv2.imshow(title, frame)
 while True :
     # 转向
     key = cv2.waitKey(100 - 10 * speedLvl) # 监听输入
-    if key == 0 and abs(dy) == 0 : # 上
-        ldx, ldy = dx, dy # 缓存上一次的方向
+    if key == 0 and abs(dy) == 0 :      # 上
         dx, dy = 0, -1
-    elif key == 1 and abs(dy) == 0 : # 下
+    elif key == 1 and abs(dy) == 0 :    # 下
         dx, dy = 0, 1
-    elif key == 2 and abs(dx) == 0 : # 左 
+    elif key == 2 and abs(dx) == 0 :    # 左 
         dx, dy = -1, 0
-    elif key == 3 and abs(dx) == 0: # 右 
+    elif key == 3 and abs(dx) == 0:     # 右 
         dx, dy = 1, 0 
-    elif key == ord('q') : # q 结束
+    elif key == ord('q') :              # 结束
         print('Quit')
         break
 
+    # 计算下一帧
     # 计算爬行向量
     vx, vy = velocity * dx, velocity * dy
     if abs(vx) + abs(vy) <= 0 :
         continue
-
-    # 下一帧
+    # 新位置
     for i in range(-1, -len(snake)-1, -1) :
         ii = len(snake) + i
         if ii > 0 :
@@ -79,6 +78,7 @@ while True :
             (x, y) = snake[ii]
             snake[ii] = (x + vx, y + vy)
 
+    # 状态判断
     if x < 0 or x > length or y < 0 or y > length : # 撞墙了
         gameOver = True
     elif snake[ii] in snake[1:] : # 撞自己
@@ -86,15 +86,6 @@ while True :
     elif snake[ii] == apple : # 吃果了
         hungry = True
         growup(snake)
-
-    # 渲染
-    frame = numpy.zeros((length, length), dtype = numpy.uint8) # 刷新场地
-
-    renderSnake(frame, snake)
-    renderApple(frame, apple)
-    cv2.putText(frame, f'>> Length: {len(snake)} | Speed Level: {speedLvl + 1}/10 <<', (10, 990), cv2.FONT_HERSHEY_DUPLEX, 1, 155)
-
-    cv2.imshow(title, frame)
 
     # 处理状态
     if gameOver :
@@ -105,6 +96,13 @@ while True :
         speedLvl = len(snake) // 10
         if speedLvl > 9 :
             speedLvl = 9 
+
+    # 渲染
+    frame = numpy.zeros((length, length), dtype = numpy.uint8) # 刷新场地
+    renderSnake(frame, snake)
+    renderApple(frame, apple)
+    cv2.putText(frame, f'>> Length: {len(snake)} | Speed Level: {speedLvl + 1}/10 <<', (10, 990), cv2.FONT_HERSHEY_DUPLEX, 1, 155)
+    cv2.imshow(title, frame)
 
 cv2.destroyAllWindows()
 
